@@ -9,11 +9,26 @@
 #include "../os.cpp"
 #include "../main.cpp"
 
+
+funcdef void
+handle_runtime_error(Runtime_Error err)
+{
+	switch(err) {
+	default:
+		break;
+	}
+}
+
+
+
+
 #if OS_Linux || OS_Mac 
 
 int main(int argc, char **argv) {
-
 	string_list args = {};
+
+	
+
 	
 	entry_point(args);
 }

@@ -4,8 +4,9 @@
 //////////
 // ~gaureesh @NOTE: base types
 
-#include <stdint.h>
-#include <assert.h>
+#include <stdint.h> // for fixed size integers
+#include <assert.h> // for assert macro
+#include <string.h> // for memmove, memcpy etc. ( not for cstd string functions )
 
 typedef uint8_t  u8;
 typedef  int8_t  s8;
@@ -55,9 +56,7 @@ struct vec4 {
 
 typedef slice<u8> bytes;
 typedef slice<const u8> string;
-
 typedef slice<string> string_list;
-
 
 //////////
 // ~gaureesh @NOTE: os and compiler detection
@@ -104,6 +103,21 @@ typedef slice<string> string_list;
 #define Min(a, b) ((a) < (b) ? (a) : (b))
 #define Clamp(min, val, max)  Min(Max((val), (min)), (max))
 
+#define Align_Up_Power_2(val, alignment) (((val) + (alignment) - 1) & ~((alignment) - 1));
+
+
+#define KB(x) (u64) (x << 10)
+#define MB(x) (u64) (x << 20)
+#define GB(x) (u64) (x << 30)
+
+// ~gaureesh @IMPORTANT: as much as possible
+// try not to use the default C-casting style
+// i.e (type) value. This is harder to find 
+// in source, instead use this macro. This is
+// purely for finding the cast in the easier.
+
+#define cast(_T, value) static_cast<_T>(value)
+
 //////////////
 // ~gaureesh @NOTE: os
 
@@ -112,15 +126,31 @@ funcdef bool  os_commit(void *ptr, u64 size);
 funcdef void  os_decommit(void *ptr, u64 size);
 funcdef void  os_release(void *ptr, u64 size);
 
-
 //////////////
 // ~gaureesh @NOTE: arena
 
 struct Arena {
-	bytes reserved;
+	u64   reserved;
 	u64   committed;
 	u64   used;
 };
+
+struct Temp {
+	Arena *arena;
+	u64    mark;
+};
+
+funcdef Arena *arena_init(u64 reserve);
+funcdef void  *arena_allocate(Arena *arena, void *old_ptr, u64 old_size, u64 new_size, u64 alignment);
+funcdef void   arena_free(Arena *arena);
+
+funcdef Temp   temp_begin(Arena *arena);
+funcdef void   temp_end(Temp temp);
+
+funcdef Arena *scratch_arena(Temp *temp = nullptr);
+
+#define alloc_struct(_arr, _T) (_T *) arena_allocate((_arr), nullptr, 0, sizeof(_T), alignof(_T))
+#define alloc_slice(_arr, _T, _n) slice<T> { arena_allocate((_arr), nullptr, 0, sizeof(_T) * (_n), alignof(_T)), (_n) }
 
 //////////////
 // ~gaureesh @NOTE: main
