@@ -10,7 +10,7 @@ arena_init(u64 reserve)
 		return nullptr;
 	}
 
-	Arena *result = cast(Arena *, mem);
+	Arena *result = (Arena *) mem;
 
 	u64 commit_size = Align_Up_Power_2(sizeof(Arena), PAGE_SIZE);
 	assert(os_commit(mem, commit_size) && "failed to do initial arena commit");
@@ -27,7 +27,7 @@ Arena_deinit(Arena *arena)
 {
 	if (arena == nullptr) return;
 
-	void *mem = cast(void *, arena);
+	void *mem = (void *) arena;
 	os_release(mem, arena->reserved);
 }
 
@@ -130,7 +130,7 @@ global u64    SCRATCH_SIZE   = MB(1);
 global Arena *global_scratch = arena_init(SCRATCH_SIZE);
 
 funcdef Arena *
-scratch_arena(Temp *temp) {
+scratch(Temp *temp) {
 	if (temp != nullptr) {
 		*temp = temp_begin(global_scratch);
 	}

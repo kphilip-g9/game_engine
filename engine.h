@@ -4,9 +4,11 @@
 //////////
 // ~gaureesh @NOTE: base types
 
-#include <stdint.h> // for fixed size integers
-#include <assert.h> // for assert macro
-#include <string.h> // for memmove, memcpy etc. ( not for cstd string functions )
+#include <stdint.h> // for fixed size integers.
+#include <assert.h> // for assert macro.
+#include <string.h> // for memmove, memcpy etc. ( not for cstd string functions ).
+#include <stdarg.h> // for va_args.
+#include <stdio.h>  // standard io operations.
 
 typedef uint8_t  u8;
 typedef  int8_t  s8;
@@ -36,13 +38,23 @@ struct slice {
 			end - begin
 		};
 	}
+
+	T& operator[](u64 index) {
+		assert(index < this->len);
+		return this->raw[index];
+	}
 };
 
 template<typename T>
 struct list {
-	T   *data;
+	T   *raw;
 	u64  len;
 	u64  capacity;
+
+	T& operator[](u64 index) {
+		assert(index < this->len);
+		return this->raw[index];
+	}
 };
 
 struct vec2 {
@@ -56,7 +68,6 @@ struct vec4 {
 
 typedef slice<u8> bytes;
 typedef slice<const u8> string;
-typedef slice<string> string_list;
 
 //////////
 // ~gaureesh @NOTE: os and compiler detection
@@ -113,13 +124,7 @@ typedef slice<string> string_list;
 #define MB(x) (u64) (x << 20)
 #define GB(x) (u64) (x << 30)
 
-// ~gaureesh @IMPORTANT: as much as possible
-// try not to use the default C-casting style
-// i.e (type) value. This is harder to find 
-// in source, instead use this macro. This is
-// purely for finding the cast in the easier.
-
-#define cast(_T, value) static_cast<_T>(value)
+#define Flag_Check(__flags, __mask) !!((__flags) & (__mask))
 
 //////////////
 // ~gaureesh @NOTE: os
@@ -150,10 +155,23 @@ funcdef void   arena_free(Arena *arena);
 funcdef Temp   temp_begin(Arena *arena);
 funcdef void   temp_end(Temp temp);
 
-funcdef Arena *scratch_arena(Temp *temp = nullptr);
+funcdef Arena *scratch(Temp *temp = nullptr);
 
 #define alloc_struct(_arr, _T) (_T *) arena_allocate((_arr), nullptr, 0, sizeof(_T), alignof(_T))
-#define alloc_slice(_arr, _T, _n) slice<T> { arena_allocate((_arr), nullptr, 0, sizeof(_T) * (_n), alignof(_T)), (_n) }
+#define alloc_slice(_arr, _T, _n) slice<_T> { (_T *) arena_allocate((_arr), nullptr, 0, sizeof(_T) * (_n), alignof(_T)), (u64) (_n) }
+
+//////////////
+// ~gaureesh @NOTE: string
+
+#define S(x) string { (const u8 *) (x), sizeof(x) - 1 }
+#define S_FMT(s) (int) s.len, (char *) s.raw
+
+funcdef string string_from_bytes(bytes data);
+funcdef string string_concat(Arena *arena, string a, string b);
+funcdef string string_format(Arena *arena, const char *fmt_string, ...);
+funcdef string string_from_cstring(Arena *arena, char *cstring);
+
+funcdef slice<string> strings_from_cstrings(Arena *arena, int count, char **cstrings);
 
 //////////////
 // ~gaureesh @NOTE: main

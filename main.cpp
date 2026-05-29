@@ -1,8 +1,14 @@
 #include "engine.h"
 
-#include <stdio.h>
-
 funcdef void
-entry_point(string_list args) {
-	printf("hello, world\n");
+entry_point(slice<string> args) {
+
+	Temp temp = temp_begin(scratch());
+	for (;;) {
+		temp_end(temp);
+		
+		
+		
+	}
+
 }

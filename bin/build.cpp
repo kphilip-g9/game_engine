@@ -4,11 +4,10 @@
 // like CMake, premake etc. which complicates our project
 // beyond what is required.
 
-#include "../engine.h"
-
 #include "../os.cpp"
+#include "../arena.cpp"
+#include "../string.cpp"
 #include "../main.cpp"
-
 
 #if OS_Windows && !DEBUG_BUILD
 
@@ -27,8 +26,7 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR cmd_line, int show_cm
 
 	int argc = 0;
 	LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
-
-	string_list args = {};
+	slice<string> args = strings_from_cstrings(scratch(), argc, wargv);
 
 	LocalFree(wargv);
 
@@ -39,9 +37,9 @@ WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR cmd_line, int show_cm
 #else
 
 int main(int argc, char **argv) {
-	string_list args = {};
-	
+	slice<string> args = strings_from_cstrings(scratch(), argc, argv);
 	entry_point(args);
+
 	return 0;
 }
 
