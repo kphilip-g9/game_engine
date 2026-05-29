@@ -2,12 +2,7 @@
 
 #include <stdio.h>
 
-funcdef Runtime_Error
+funcdef void
 entry_point(string_list args) {
-
 	printf("hello, world\n");
-
-	return Runtime_Error::None;
 }
-
-

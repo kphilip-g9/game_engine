@@ -81,7 +81,7 @@ typedef slice<string> string_list;
 # define Compiler_Clang
 #elif defined(__GNUC__) || defined(__GNUG__)
 # define Compiler_GCC
-#elif defined(__MSC_VER)
+#elif defined(_MSC_VER)
 # define Compiler_CL
 #else
 # error "c++ compiler not supported"
@@ -95,6 +95,10 @@ typedef slice<string> string_list;
 //////////////
 // ~gaureesh @NOTE: useful macro definitions
 
+#ifndef DEBUG_BUILD
+# define DEBUG_BUILD 1
+#endif
+
 #define funcdef       static
 #define local_persist static
 #define global        static
@@ -104,7 +108,6 @@ typedef slice<string> string_list;
 #define Clamp(min, val, max)  Min(Max((val), (min)), (max))
 
 #define Align_Up_Power_2(val, alignment) (((val) + (alignment) - 1) & ~((alignment) - 1));
-
 
 #define KB(x) (u64) (x << 10)
 #define MB(x) (u64) (x << 20)
@@ -154,11 +157,5 @@ funcdef Arena *scratch_arena(Temp *temp = nullptr);
 
 //////////////
 // ~gaureesh @NOTE: main
-
-enum class Runtime_Error {
-	None,
-	Window_Creation_Failure,
-	Opengl_Init_Failure,
-}; 
 
 #endif // ENGINE_H

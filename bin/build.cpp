@@ -10,34 +10,40 @@
 #include "../main.cpp"
 
 
-funcdef void
-handle_runtime_error(Runtime_Error err)
+#if OS_Windows && !DEBUG_BUILD
+
+// ~gaureesh @NOTE: windows has it's own main function that
+// is meant for desktop applications. otherwise the
+// application will have the standard output console visible
+// always.
+
+int WINAPI
+WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR cmd_line, int show_cmd)
 {
-	switch(err) {
-	default:
-		break;
-	}
+	(void) instance;
+	(void) prev_instance;
+	(void) cmd_line;
+	(void) show_cmd;
+
+	int argc = 0;
+	LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+	string_list args = {};
+
+	LocalFree(wargv);
+
+	entry_point(args);
+	return 0;
 }
 
-
-
-
-#if OS_Linux || OS_Mac 
+#else
 
 int main(int argc, char **argv) {
 	string_list args = {};
-
-	
-
 	
 	entry_point(args);
+	return 0;
 }
 
-#elif OS_Windows
-
-~gaureesh @NOTE: windows has it's own main function that
-is meant for desktop applications. otherwise the
-application will have the standard output console visible
-always.
-
 #endif
+
