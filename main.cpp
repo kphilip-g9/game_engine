@@ -5,6 +5,8 @@
 funcdef void
 entry_point(slice<string> args)
 {
+	((void) args);
+
 	os_init();
 	defer(os_deinit());
 

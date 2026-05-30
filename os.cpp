@@ -92,10 +92,6 @@ os_prepare_frame(OS_Handle window)
 	OS_Input input = {};
 	RGFW_event event = {};
 	while (RGFW_window_checkEvent(win, &event)) {
-		switch (event.type) {
-		default:
-			break;
-		}
 	}
 
 	return input;
