@@ -129,3 +129,24 @@ os_time_diff(OS_TimeStamp t0, OS_TimeStamp t1)
 }
 
 
+funcdef bytes
+os_load_entire_file(Arena *arena, string path)
+{
+	OS_FileData file_data = os_file_data(path);
+	if (!Flag_Check(file_data.flags, File_Exists))
+		return {};
+
+	Temp t = temp_begin(arena);
+
+	u64 arena_pos = arena->used;
+	bytes data = alloc_slice(arena, u8, file_data.size);
+	Load_Error err = os_file_to_buffer(data.raw, data.len, path);
+
+	if (err != Load_Ok) {
+		temp_end(t);
+		return {};
+	}
+
+	return data;
+}
+

@@ -148,6 +148,12 @@ byteswap_u32(u32 x)
            ((x & 0xFF000000u) >> 24);
 }
 
+struct Arena {
+	u64   reserved;
+	u64   committed;
+	u64   used;
+};
+
 //////////////
 // ~gaureesh @NOTE: os
 
@@ -228,17 +234,23 @@ struct OS_FileData {
 	u64 size;
 };
 
-funcdef OS_FileData os_file_data(string path);
+enum Load_Error {
+	Load_Ok,
+	Load_Not_Found,
+	Load_Access_Denied,
+	Load_Invalid_Path,
+	Load_Buffer_Overflow,
+	Load_IO_Error,
+	Load_Error_Count,
+};
 
+funcdef OS_FileData os_file_data(string path);
+funcdef Load_Error  os_file_to_buffer(u8 *ptr, u64 len, string path);
+funcdef bytes       os_load_entire_file(Arena *arena, string path);
+funcdef bool        os_write_to_file(string path, bytes data);
 
 //////////////
 // ~gaureesh @NOTE: arena
-
-struct Arena {
-	u64   reserved;
-	u64   committed;
-	u64   used;
-};
 
 struct Temp {
 	Arena *arena;
