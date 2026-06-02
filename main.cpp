@@ -19,7 +19,10 @@ entry_point(slice<string> args)
 	gfx_init_draw_data(&draw_data, Draw::Triangles);
 	defer(gfx_deinit_draw_data(&draw_data));
 
+	vec2 size = os_window_size(window);
+
 	draw_data.camera.scale = 1.0f;
+
 
 	f32 time = 0.0f;
 
@@ -28,6 +31,10 @@ entry_point(slice<string> args)
 		os_prepare_frame(window);
 
 		vec2 resolution = os_window_size(window);
+		draw_data.camera.offset = {
+			resolution.x * 0.5f,
+			resolution.y * 0.5f
+		};
 
 		gfx_begin(&draw_data, resolution);
 

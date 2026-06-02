@@ -232,6 +232,7 @@ struct OS_FileData {
 	OS_FileFlags flags;
 	OS_FileKind kind;
 	u64 size;
+	u64 timestamp;
 };
 
 enum Load_Error {
@@ -351,5 +352,25 @@ template<typename F> DeferImpl<F> defer_func(F &&f) { return DeferImpl<F>(forwar
 #define TOKEN_PASTE(a, b) a##b
 #define DEFER_NAME(base, line) TOKEN_PASTE(base, line)
 #define defer(code) auto DEFER_NAME(_defer_, __LINE__) = defer_func([&]() { code; })
+
+//////////////
+// ~gaureesh @NOTE: assets
+
+enum class Asset {
+	Sprite_Shader,
+	Screen_Shader,
+	Count,
+};
+
+struct Sprite {
+	u32 x, y;
+	u32 w, h;
+	u32 frame_count;
+};
+
+funcdef void assets_init();
+funcdef void assets_deinit();
+
+funcdef slice<string> asset_fetch_shader_source(Asset shader, Arena *arena);
 
 #endif // ENGINE_H

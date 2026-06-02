@@ -138,7 +138,6 @@ os_load_entire_file(Arena *arena, string path)
 
 	Temp t = temp_begin(arena);
 
-	u64 arena_pos = arena->used;
 	bytes data = alloc_slice(arena, u8, file_data.size);
 	Load_Error err = os_file_to_buffer(data.raw, data.len, path);
 
