@@ -78,3 +78,76 @@ string_to_cstring(Arena *arena, string s)
 
 	return string_from_bytes(data);
 }
+
+
+// ~karun
+
+funcdef bool
+string_equal(string a, string b)
+{
+	if (a.len != b.len) return false;
+	return memcmp(a.raw, b.raw, a.len) == 0;
+}
+
+funcdef string
+string_strip(string s)
+{
+	u64 start = 0;
+	u64 end   = s.len;
+
+	// trim leading whitespace
+	while (start < end &&
+		  (s.raw[start] == ' '  ||
+		   s.raw[start] == '\t' ||
+		   s.raw[start] == '\n' ||
+		   s.raw[start] == '\r'))
+	{
+		start++;
+	}
+
+	// trim trailing whitespace
+	while (end > start &&
+		  (s.raw[end - 1] == ' '  ||
+		   s.raw[end - 1] == '\t' ||
+		   s.raw[end - 1] == '\n' ||
+		   s.raw[end - 1] == '\r'))
+	{
+		end--;
+	}
+
+	return string { s.raw + start, end - start };
+}
+
+funcdef slice<string>
+string_as_lines(Arena *arena, string s)
+{
+	// first pass: count lines
+	u64 line_count = 0;
+	for (u64 i = 0; i < s.len; i++) {
+		if (s.raw[i] == '\n') line_count++;
+	}
+	// last line may not end with \n
+	if (s.len > 0 && s.raw[s.len - 1] != '\n') line_count++;
+
+	slice<string> result = alloc_slice(arena, string, line_count);
+
+	u64 line_idx   = 0;
+	u64 line_start = 0;
+
+	for (u64 i = 0; i < s.len; i++) {
+		if (s.raw[i] == '\n') {
+			u64 end = i;
+			// handle windows \r\n line endings
+			if (end > line_start && s.raw[end - 1] == '\r') end--;
+			result[line_idx++] = string { s.raw + line_start, end - line_start };
+			line_start = i + 1;
+		}
+	}
+
+	// last line if file doesn't end with \n
+	if (line_idx < line_count) {
+		result[line_idx] = string { s.raw + line_start, s.len - line_start };
+	}
+
+	return result;
+}

@@ -282,6 +282,9 @@ funcdef string string_from_cstring(Arena *arena, char *cstring);
 funcdef slice<string> strings_from_cstrings(Arena *arena, int count, char **cstrings);
 
 funcdef string string_to_cstring(Arena *arena, string s);
+funcdef bool          string_equal(string a, string b);
+funcdef string        string_strip(string s);
+funcdef slice<string> string_as_lines(Arena *arena, string s);
 
 //////////////
 // ~gaureesh @NOTE: graphics

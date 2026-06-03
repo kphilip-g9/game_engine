@@ -11,6 +11,7 @@
 #include "../os.cpp"
 #include "../arena.cpp"
 #include "../string.cpp"
+#include "../assets.cpp"
 #include "../gfx.cpp"
 #include "../main.cpp"
 
